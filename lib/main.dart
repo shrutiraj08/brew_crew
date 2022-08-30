@@ -1,14 +1,18 @@
+import 'package:brew_crew/Provider/provider.dart';
 import 'package:brew_crew/models/myuser.dart';
-import 'package:brew_crew/screens/wrapper.dart';
-import 'package:brew_crew/sevices/auth.dart';
+import 'package:brew_crew/screens/authenticate/authenticate.dart';
+import 'package:brew_crew/screens/home/home.dart';
+
+import 'package:brew_crew/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+   runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -17,14 +21,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<MyUser?>.value(
-      catchError: (_,__) {},
-      initialData: null,
-      value: AuthService().user,
-      child: MaterialApp(
-        home: Wrapper(),
-      ),
-    );
-
+    return MaterialApp(
+        home: FirebaseAuth.instance.currentUser != null
+            ? Home()
+            : Authenticate());
   }
 }
